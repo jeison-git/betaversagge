@@ -1,0 +1,151 @@
+<div class="container py-8">
+    {{--  Componente de Carrito de compra --}}
+    <x-components.table-responsive>
+        <div class="px-6 py-4 bg-white">
+            <h1 class="text-lg font-semibold text-black">CESTA DE COMPRAS</h1>
+        </div>
+
+        @if (Cart::count())
+        
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-black uppercase">
+                            Nombre
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-black uppercase">
+                            Precio
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-black uppercase">
+                            Cantidad
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-black uppercase">
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="bg-white divide-y divide-gray-200">
+
+                    @foreach (Cart::content() as $item)
+                        
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10">
+                                        <img class="object-cover object-center w-10 h-10 rounded-full"
+                                            src="{{ $item->options->image }}"
+                                            alt="">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-black">
+                                            {{$item->name}}
+                                        </div>
+                                        <div class="text-sm text-black">
+                                            @if ($item->options->color)
+                                                <span>
+                                                    Color: {{ __($item->options->color) }}
+                                                </span>    
+                                            @endif
+
+                                            @if ($item->options->size)
+
+                                                <span class="mx-1">-</span>
+
+                                                <span>
+                                                    {{ $item->options->size }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                         
+                                <div class="text-sm text-black">
+                                    <span>US ${{ $item->price }}</span>
+                                    <a class="ml-6 cursor-pointer hover:text-red-600"
+                                        wire:click="delete('{{$item->rowId}}')"
+                                        wire:loading.class="text-red-600 opacity-25"
+                                        wire:target="delete('{{$item->rowId}}')">
+                                        <i class="fas fa-trash"></i>  
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-black">
+                                    @if ($item->options->size)
+
+                                        @livewire('update-cart-item-size', ['rowId' => $item->rowId], key($item->rowId))
+
+                                    @elseif($item->options->color)
+
+                                        @livewire('update-cart-item-color', ['rowId' => $item->rowId], key($item->rowId))
+                                        
+                                    @else
+
+                                        @livewire('update-cart-item', ['rowId' => $item->rowId], key($item->rowId))
+
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-black whitespace-nowrap">
+                                <div class="text-sm text-black">
+                                    US ${{$item->price * $item->qty}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+            </table>
+
+            <div class="px-6 py-4">
+                <a class="inline-block mt-3 text-sm cursor-pointer hover:underline hover:text-red-600" 
+                    wire:click="destroy">
+                    <i class="fas fa-trash"></i>
+                    Eliminar de su cesta de compras
+                </a>
+            </div>
+
+        @else
+            <div class="flex flex-col items-center">
+                <x-components.cart/>
+                <p class="mt-4 text-lg font-light  text-black">TU CARRO DE COMPRAS ESTÁ VACÍO</p>
+
+                <x-components.button-enlace href="/" class="px-16 mt-4">
+                    Ir al inicio
+                </x-components.button-enlace>
+            </div>
+        @endif
+
+    </x-components.table-responsive>
+
+    <!-- This example requires Tailwind CSS v2.0+ -->
+
+    @if (Cart::count())
+
+        <div class="px-6 py-4 mt-4 bg-white {{-- rounded-lg --}} shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-black font-semibold">
+                        <span class="text-lg font-bold">Total:</span>
+                        US ${{ Cart::subTotal() }} 
+                    </p>
+                </div>
+
+                <div>
+                    <x-components.button-enlace href="{{ route('orders.create') }}">
+                        Continuar
+                    </x-components.button-enlace>
+                </div>
+            </div>
+        </div>
+
+    @endif
+</div>

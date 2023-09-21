@@ -1,0 +1,12 @@
+@keyframes show-image {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fixed {
+    animation: show-image 1s ease-in-out;
+}
